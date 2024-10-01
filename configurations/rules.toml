@@ -1,31 +1,30 @@
 [[rules]]
-name = "replace_isToggleEnabled_with_boolean_literal"
-query = """(
-    (if_statement
-        condition: (parenthesized_expression
-            (method_invocation
-                object: (identifier) @boolean_parse_obj
-                name: (identifier) @boolean_parse_method
-                arguments: (argument_list
-                    (method_invocation
-                        object: (identifier) @config_obj
-                        name: (identifier) @config_get_method
-                        arguments: (argument_list
-                            (field_access
-                                object: (identifier) @config_key_obj
-                                field: (identifier) @feature_key
-                            )
-                        )
-                    )
-                )
-            )
-        ) @condition
-    )
-    (#eq? @boolean_parse_obj "Boolean")
-    (#eq? @boolean_parse_method "parseBoolean")
-    (#eq? @config_obj "tenantConfiguration")
-    (#eq? @config_get_method "get")
-    (#eq? @feature_key "FEATURE_SEQUENTIAL_NUMBERS_FOR_WARRANTY")
+name = "replace_boolean_parse_with_literal"
+query = """
+((
+(method_invocation
+object: (identifier) @object
+name: (identifier) @name
+arguments: (argument_list
+([
+                          (method_invocation 
+        name : (_) @name1
+        arguments: ((argument_list 
+                        ([
+                          (field_access field: (_)@argument)
+                          (_) @argument
+                         ])) )
+            
+    ) @method_invocation
+                         
+						 ])) 
+            
+) @method_invocation
+)
+(#eq? @name1 "get")
+(#eq? @object "Boolean")
+(#eq? @name "parseBoolean")
+(#eq? @argument "@stale_flag_name")
 )
 """
 replace_node = "method_invocation"
