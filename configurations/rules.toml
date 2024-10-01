@@ -31,3 +31,28 @@ replace_node = "method_invocation"
 replace = "@treated"
 groups = ["replace_expression_with_boolean_literal"]
 holes = ["treated", "stale_flag_name"]
+
+
+[[rules]]
+name = "remove_stale_test_case"
+query = """
+((
+    (method_invocation
+                    object: (identifier) @config_obj
+                    name: (identifier) @config_get_method
+                    arguments: (argument_list
+                        (field_access
+                            object: (identifier) @config_key_obj
+                            field: (identifier) @feature_key
+                        )
+                    )
+                ) @method_invocation
+)
+(#eq? @config_obj "tenantConfiguration")
+(#eq? @config_get_method "get")
+(#eq? @feature_key "FEATURE_SEQUENTIAL_NUMBERS_FOR_WARRANTY")
+)
+"""
+replace_node = "method_invocation"
+replace = ""
+holes = ["treated", "stale_flag_name"]
