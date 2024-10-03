@@ -23,7 +23,7 @@ def run_java_ff_demo():
     args = PiranhaArguments(
         "java",
         substitutions={
-            "stale_flag_name": "TenantConfigurationKey.FEATURE_SEQUENTIAL_NUMBERS_FOR_WARRANTY",
+            "stale_flag_name": "FEATURE_SEQUENTIAL_NUMBERS_FOR_WARRANTY",
             "treated": "true",
             "treated_complement": "false",
         },

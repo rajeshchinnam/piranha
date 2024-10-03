@@ -1,27 +1,7 @@
 [[rules]]
-name = "replace_isToggleEnabled_with_boolean_literal"
-query = """((
-    (method_invocation 
-        name : (_) @name
-        arguments: ((argument_list 
-                        ([
-                          (field_access field: (_)@argument)
-                          (_) @argument
-                         ])) )
-            
-    ) @method_invocation
-)
-(#eq? @name "get")
-(#eq? @argument "@stale_flag_name")
-)"""
-replace_node = "method_invocation"
-replace = "\"true\""
-groups = ["replace_expression_with_boolean_literal"]
-holes = ["treated", "stale_flag_name"]
-
-[[rules]]
-name = "remove_stale_feature_method"
-query = """(
+name = "remove_method_with_specific_line"
+query = """
+(
   (method_declaration
     body: (block
       (expression_statement
@@ -32,7 +12,7 @@ query = """(
               (string_literal) @when_argument
             )
           )
-          name: (identifier) @then_return
+          name: (identifier) @thenreturn
           arguments: (argument_list
             (string_literal) @return_argument
           )
@@ -42,11 +22,9 @@ query = """(
   ) @method_declaration
 )
 (#eq? @whenmethod "when")
-(#eq? @then_return "thenReturn")
-(#eq? @when_argument "\"true\"")
-(#eq? @return_argument "\"false\"")
+(#eq? @when_argument "\\"true\\"")
+(#eq? @thenreturn "thenReturn")
+(#eq? @return_argument "\\"false\\"")
 """
 replace_node = "method_declaration"
 replace = ""
-holes = ["treated", "stale_flag_name"]
-groups = ["cleanup_tautology"]
