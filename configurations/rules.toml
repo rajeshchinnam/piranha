@@ -1,14 +1,8 @@
 [[rules]]
-name = "replace_boolean_parse_with_literal"
-query = """
-((
-(method_invocation
-object: (identifier) @object
-name: (identifier) @name
-arguments: (argument_list
-([
-                          (method_invocation 
-        name : (_) @name1
+name = "replace_isToggleEnabled_with_boolean_literal"
+query = """((
+    (method_invocation 
+        name : (_) @name
         arguments: ((argument_list 
                         ([
                           (field_access field: (_)@argument)
@@ -16,43 +10,43 @@ arguments: (argument_list
                          ])) )
             
     ) @method_invocation
-                         
-						 ])) 
-            
-) @method_invocation
 )
-(#eq? @name1 "get")
-(#eq? @object "Boolean")
-(#eq? @name "parseBoolean")
+(#eq? @name "get")
 (#eq? @argument "@stale_flag_name")
-)
-"""
+)"""
 replace_node = "method_invocation"
-replace = "@treated"
+replace = "\"true\""
 groups = ["replace_expression_with_boolean_literal"]
 holes = ["treated", "stale_flag_name"]
 
-
 [[rules]]
-name = "remove_stale_test_case"
-query = """
-((
-    (method_invocation
-                    object: (identifier) @config_obj
-                    name: (identifier) @config_get_method
-                    arguments: (argument_list
-                        (field_access
-                            object: (identifier) @config_key_obj
-                            field: (identifier) @feature_key
-                        )
-                    )
-                ) @method_invocation
+name = "remove_stale_feature_method"
+query = """(
+  (method_declaration
+    body: (block
+      (expression_statement
+        (method_invocation
+          object: (method_invocation
+            name: (identifier) @whenmethod
+            arguments: (argument_list
+              (string_literal) @when_argument
+            )
+          )
+          name: (identifier) @then_return
+          arguments: (argument_list
+            (string_literal) @return_argument
+          )
+        )
+      )
+    )
+  ) @method_declaration
 )
-(#eq? @config_obj "tenantConfiguration")
-(#eq? @config_get_method "get")
-(#eq? @feature_key "FEATURE_SEQUENTIAL_NUMBERS_FOR_WARRANTY")
-)
+(#eq? @whenmethod "when")
+(#eq? @then_return "thenReturn")
+(#eq? @when_argument "\"true\"")
+(#eq? @return_argument "\"false\"")
 """
-replace_node = "method_invocation"
+replace_node = "method_declaration"
 replace = ""
 holes = ["treated", "stale_flag_name"]
+groups = ["cleanup_tautology"]
